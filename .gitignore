@@ -1,0 +1,4 @@
+doc_data/
+.venv/
+.idea/
+*.so
