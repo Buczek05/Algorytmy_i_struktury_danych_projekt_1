@@ -9,6 +9,7 @@ void show_result(struct Integral integral){
 
 int main() {
     for (long i=1000000; i<100000000000; i *= 10){
+        printf("accuracy %lf\n", i);
         show_result(get_1(i));
     }
 //    show_result(get_2(accuracy));

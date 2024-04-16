@@ -1,7 +1,7 @@
 #include <string.h>
 #include "calculate_integer.c"
 
-float f1(float x) {
+double f1(double x) {
     return x * x;
 }
 
@@ -14,7 +14,7 @@ struct Integral get_1(long accuracy){
     return integral;
 }
 
-float f2(float x){
+double f2(double x){
     return pow(M_E, x);
 }
 
@@ -27,7 +27,7 @@ struct Integral get_2(long accuracy){
     return integral;
 }
 
-float f3(float x){
+double f3(double x){
     return cos(2*x);
 }
 
@@ -40,7 +40,7 @@ struct Integral get_3(long accuracy){
     return integral;
 }
 
-float f4(float x){
+double f4(double x){
     return -2 * x * x -15;
 }
 
