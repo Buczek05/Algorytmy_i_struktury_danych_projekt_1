@@ -1,14 +1,13 @@
 import ctypes
 import os
 from ctypes import CDLL
-from typing import List
 
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle, Polygon
 
-example_integer = CDLL("../example_integer.so")
+example_integer = CDLL("./example_integer.so")
 
 
 class Integral(ctypes.Structure):
@@ -31,7 +30,6 @@ def get_integral_from_index(index: int) -> Integral:
 def generate_func_on_plot(integral: Integral, ax: plt.Axes) -> None:
     x = np.linspace(integral.start_point, integral.end_point, 10000)
     y = np.array([integral.integral_func(xi) for xi in x])
-    plt.figure(figsize=[100, 100])
     ax.plot(x, y)
 
 
@@ -78,25 +76,24 @@ def generate_plot_for_montecarlo(index: int, data: list[tuple[float, float, int]
 file_to_func = {
     "rectangle": generate_plot_for_rectangle,
     "trapezoid": generate_plot_for_trapezoid,
-    "montecarlo": generate_plot_for_montecarlo
+    "monte-carlo": generate_plot_for_montecarlo
 }
 
 
-def read_data(file_name: str) -> list[map[float]]:
+def read_data(file_name: str) -> list[tuple[float]]:
     with open(file_name, "r") as file:
         return [map(float, line.split(";")) for line in file.readlines()]
 
 
 def main() -> None:
-    directory = "../doc_data/"
-    for file_name in os.listdir("../doc_data/"):
+    directory = "./doc_data/"
+    for file_name in os.listdir("./doc_data/"):
         if file_name.endswith(".jpg"):
             continue
-        index, file_type = file_name.split("_")
+        index, accuracy, file_type = file_name.split("_")
         plot = file_to_func[file_type](index, read_data(directory + file_name))
-        if plot:
-            plot.savefig(f"../doc/{file_name}.jpg", dpi=1000)
-            plt.close(plot)
+        plot.savefig(f"./doc/img/{file_name}.jpg", dpi=1000)
+        plt.close(plot)
 
 
 if __name__ == '__main__':
