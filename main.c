@@ -8,10 +8,11 @@ void show_result(struct Integral integral){
 
 
 int main() {
-    int accuracy = 1000000;
-    show_result(get_1(accuracy));
-    show_result(get_2(accuracy));
-    show_result(get_3(accuracy));
-    show_result(get_4(accuracy));
+    for (long i=1000000; i<100000000000; i *= 10){
+        show_result(get_1(i));
+    }
+//    show_result(get_2(accuracy));
+//    show_result(get_3(accuracy));
+//    show_result(get_4(accuracy));
     return 0;
 }
