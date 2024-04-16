@@ -40,15 +40,16 @@ double get_random_double(double min, double max) {
 }
 
 double get_highest_y(struct Integral *integral){
-    double step = get_step(integral);
-    double x = integral->start_point;
-    double highest_y, moment_y = -1;
-    for (long i = 1; i < integral->calculating_accuracy; i++) {
-        moment_y = integral->integral_func(x);
-        highest_y = moment_y > highest_y ? moment_y : highest_y;
-        x += step;
-    }
-    return highest_y;
+    return 10000;
+//    double step = get_step(integral);
+//    double x = integral->start_point;
+//    double highest_y, moment_y = -1;
+//    for (long i = 1; i < integral->calculating_accuracy; i++) {
+//        moment_y = integral->integral_func(x);
+//        highest_y = moment_y > highest_y ? moment_y : highest_y;
+//        x += step;
+//    }
+//    return highest_y;
 }
 
 double calculate_integral_using_monte_carlo(struct Integral *integral){
