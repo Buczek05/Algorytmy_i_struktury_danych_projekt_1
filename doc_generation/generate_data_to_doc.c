@@ -8,52 +8,43 @@ char *create_file_name(char *file_prefix, long accuracy, char *type) {
     return filename;
 }
 
-char *create_img_file_name(char *file_prefix, long accuracy, char *type) {
-    char *filename = malloc(256 * sizeof(char));
-    sprintf(filename, "img/%s_%ld_%s.jpg", file_prefix, accuracy, type);
-    return filename;
-}
-
-
-void show_result(struct Integral integral, char *file_prefix, long accuracy, FILE *summary_file) {
+void show_result(struct Integral integral, char *file_prefix, long accuracy, FILE *summary_file, double real_result) {
     char *file_rectangle = create_file_name(file_prefix, accuracy, "rectangle");
-    char *file_rectangle_img = create_img_file_name(file_prefix, accuracy, "rectangle");
     char *file_trapezoid = create_file_name(file_prefix, accuracy, "trapezoid");
-    char *file_trapezoid_img = create_img_file_name(file_prefix, accuracy, "trapezoid");
     char *file_monte_carlo = create_file_name(file_prefix, accuracy, "monte-carlo");
-    char *file_monte_carlo_img = create_img_file_name(file_prefix, accuracy, "monte-carlo");
 
-    fprintf(summary_file, "Using rectangle: %f with %d rectangle\n\n",
-            with_save_data_calculate_integral_using_rectangle(&integral, file_rectangle), accuracy);
-    fprintf(summary_file, "<img src=\"%s\" style=\"width:300px;\"/>\n\n", file_rectangle_img);
-    fprintf(summary_file, "Using trapezoid: %f with %d trapezoid\n\n",
-            with_save_data_calculate_integral_using_trapezoid(&integral, file_trapezoid), accuracy);
-    fprintf(summary_file, "<img src=\"%s\" style=\"width:300px;\"/>\n\n", file_trapezoid_img);
-    fprintf(summary_file, "Using monte carlo: %f with %d points\n\n",
-            with_save_data_calculate_integral_using_monte_carlo(&integral, file_monte_carlo), accuracy);
-    fprintf(summary_file, "<img src=\"%s\" style=\"width:300px;\"/>\n\n", file_monte_carlo_img);
+    double r1 = with_save_data_calculate_integral_using_rectangle(&integral, file_rectangle);
+    double r2 = with_save_data_calculate_integral_using_trapezoid(&integral, file_trapezoid);
+    double r3 = with_save_data_calculate_integral_using_monte_carlo(&integral, file_monte_carlo);
+
+    fprintf(summary_file, "%lf (%lf%%) |", r1, r1 / real_result * 100);
+    fprintf(summary_file, "%lf (%lf%%) |", r2, r2 / real_result * 100);
+    fprintf(summary_file, "%lf (%lf%%) |", r3, r3 / real_result * 100);
 
 
     free(file_rectangle);
-    free(file_rectangle_img);
     free(file_trapezoid);
-    free(file_trapezoid_img);
     free(file_monte_carlo);
-    free(file_monte_carlo_img);
 }
 
 
 int main() {
-    int accuracy_table[] = {10, 50, 100, 500, 1000, 5000, 10000};
-    int accuracy_len = 7;
     long accuracy;
     FILE *summary_file = open_file("doc/auto-documentation.md");
-    for (int i = 0; i < accuracy_len; i++) {
-        accuracy = accuracy_table[i];
-        show_result(get_1(accuracy), "1", accuracy, summary_file);
-        show_result(get_2(accuracy), "2", accuracy, summary_file);
-        show_result(get_3(accuracy), "3", accuracy, summary_file);
-        show_result(get_4(accuracy), "4", accuracy, summary_file);
+    fprintf(summary_file, "|    | ");
+    for (int i = 1; i < 5; i++) {
+        fprintf(summary_file, "f%d rectangle | f%d trapezoid | f%d monte carlo |", i, i, i);
+    }
+    fprintf(summary_file, "\n| --- | ");
+    for (int i = 1; i < 5; i++) {
+        fprintf(summary_file, "--- | --- | --- |");
+    }
+    for (int i = 10; i < 100000000; i+=50) {
+        fprintf(summary_file, "\n| %ld | ", i);
+        show_result(get_1(i), "1", i, summary_file, 666666.666666666);
+        show_result(get_2(i), "2", i, summary_file, 7.2537208157);
+        show_result(get_3(i), "3", i, summary_file, 0.9129452507);
+        show_result(get_4(i), "4", i, summary_file, -1633.33333);
     }
     return 0;
 }

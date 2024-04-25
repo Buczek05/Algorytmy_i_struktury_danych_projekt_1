@@ -46,18 +46,22 @@ double with_save_data_calculate_integral_using_monte_carlo(struct Integral *inte
     long point_under_lines = 0;
     double random_x, random_y;
     double highest_y = get_highest_y(integral);
+    double lowest_y = get_lowest_y(integral);
+    highest_y = fabs(lowest_y) > highest_y ? fabs(lowest_y) : highest_y;
     double y;
     long value;
     for (long i = 0; i < integral->calculating_accuracy; i++) {
         random_x = get_random_double(integral->start_point, integral->end_point);
-        random_y = get_random_double(0.0, highest_y);
+        random_y = get_random_double(0., highest_y);
         y = integral->integral_func(random_x);
         if (y < 0) value = random_y <= fabs(y) ? -1 : 0;
-        else value = random_y <= y ? 1 : 0;
-        fprintf(file, "%f;%f;%d\n", random_x, random_y, value);
+        else if (y >= 0) value = random_y <= y ? 1 : 0;
+        else value = 0;
+        fprintf(file, "%f;%f;%ld\n", random_x, random_y, value);
         point_under_lines += value;
     }
-    double coverage = (double) point_under_lines / (double) integral->calculating_accuracy;
     fclose(file);
+    double coverage = (double) point_under_lines / (double) integral->calculating_accuracy;
     return (integral->end_point - integral->start_point) * highest_y * coverage;
 }
+

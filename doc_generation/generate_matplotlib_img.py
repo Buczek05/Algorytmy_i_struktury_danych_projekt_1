@@ -1,7 +1,9 @@
 import ctypes
 import os
+import time
 from ctypes import CDLL
 
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -12,16 +14,16 @@ example_integer = CDLL("./example_integer.so")
 
 class Integral(ctypes.Structure):
     _fields_ = [
-        ("integral_func", ctypes.CFUNCTYPE(ctypes.c_float, ctypes.c_float)),
+        ("integral_func", ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)),
         ("start_point", ctypes.c_float),
         ("end_point", ctypes.c_float),
-        ("calculating_accuracy", ctypes.c_int),
+        ("calculating_accuracy", ctypes.c_long),
     ]
 
 
 def get_integral_from_index(index: int) -> Integral:
     func = getattr(example_integer, f"get_{index}")
-    func.argtypes = [ctypes.c_int]
+    func.argtypes = [ctypes.c_long]
     func.restype = Integral
     integral = func(100)
     return integral
@@ -29,7 +31,7 @@ def get_integral_from_index(index: int) -> Integral:
 
 def generate_func_on_plot(integral: Integral, ax: plt.Axes) -> None:
     x = np.linspace(integral.start_point, integral.end_point, 10000)
-    y = np.array([integral.integral_func(xi) for xi in x])
+    y = np.array(list(map(integral.integral_func, x)))
     ax.plot(x, y)
 
 
@@ -68,7 +70,6 @@ def generate_plot_for_montecarlo(index: int, data: list[tuple[float, float, int]
     fig, ax = plt.subplots()
     generate_func_on_plot(integral, ax)
     for x, y, value in data:
-        y = -y if value < 0 else y
         ax.plot(x, y, 'o', color=get_color_for_value(value), markersize=1)
     return fig
 
@@ -93,6 +94,7 @@ def main() -> None:
         index, accuracy, file_type = file_name.split("_")
         plot = file_to_func[file_type](index, read_data(directory + file_name))
         plot.savefig(f"./doc/img/{file_name}.jpg", dpi=1000)
+        time.sleep(0.5)
         plt.close(plot)
 
 

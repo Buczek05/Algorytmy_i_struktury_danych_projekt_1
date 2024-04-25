@@ -40,29 +40,45 @@ double get_random_double(double min, double max) {
 }
 
 double get_highest_y(struct Integral *integral){
-    return 10000;
-//    double step = get_step(integral);
-//    double x = integral->start_point;
-//    double highest_y, moment_y = -1;
-//    for (long i = 1; i < integral->calculating_accuracy; i++) {
-//        moment_y = integral->integral_func(x);
-//        highest_y = moment_y > highest_y ? moment_y : highest_y;
-//        x += step;
-//    }
-//    return highest_y;
+    double step = get_step(integral);
+    double x = integral->start_point;
+    double highest_y = integral->integral_func(x), moment_y;
+    for (long i = 1; i < integral->calculating_accuracy; i++) {
+        moment_y = integral->integral_func(x);
+        highest_y = moment_y > highest_y ? moment_y : highest_y;
+        x += step;
+    }
+    return highest_y;
+}
+
+double get_lowest_y(struct Integral *integral){
+    double step = get_step(integral);
+    double x = integral->start_point;
+    double lowest_y = integral->integral_func(x), moment_y;
+    for (long i = 1; i < integral->calculating_accuracy; i++) {
+        moment_y = integral->integral_func(x);
+        lowest_y = moment_y < lowest_y ? moment_y : lowest_y;
+        x += step;
+    }
+    return lowest_y;
 }
 
 double calculate_integral_using_monte_carlo(struct Integral *integral){
+    int value;
     long point_under_lines = 0;
     double random_x, random_y;
     double highest_y = get_highest_y(integral);
+    double lowest_y = get_lowest_y(integral);
+    highest_y = fabs(lowest_y) > highest_y ? fabs(lowest_y) : highest_y;
     double y;
     for (long i = 0; i < integral->calculating_accuracy; i++) {
         random_x = get_random_double(integral->start_point, integral->end_point);
-        random_y = get_random_double(0.0, highest_y);
+        random_y = get_random_double(0., highest_y);
         y = integral->integral_func(random_x);
-        if (y < 0) point_under_lines -= random_y <= fabs(y) ? 1 : 0;
-        else point_under_lines += random_y <= y ? 1 : 0;
+        if (y < 0) value = random_y <= fabs(y) ? -1 : 0;
+        else if (y >= 0) value = random_y <= y ? 1 : 0;
+        else value = 0;
+        point_under_lines += value;
     }
     double coverage = (double) point_under_lines / (double) integral->calculating_accuracy;
     return (integral->end_point - integral->start_point) * highest_y * coverage;
