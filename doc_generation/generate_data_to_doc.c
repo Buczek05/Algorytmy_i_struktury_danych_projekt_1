@@ -9,22 +9,13 @@ char *create_file_name(char *file_prefix, long accuracy, char *type) {
 }
 
 void show_result(struct Integral integral, char *file_prefix, long accuracy, FILE *summary_file, double real_result) {
-    char *file_rectangle = create_file_name(file_prefix, accuracy, "rectangle");
-    char *file_trapezoid = create_file_name(file_prefix, accuracy, "trapezoid");
-    char *file_monte_carlo = create_file_name(file_prefix, accuracy, "monte-carlo");
-
-    double r1 = with_save_data_calculate_integral_using_rectangle(&integral, file_rectangle);
-    double r2 = with_save_data_calculate_integral_using_trapezoid(&integral, file_trapezoid);
-    double r3 = with_save_data_calculate_integral_using_monte_carlo(&integral, file_monte_carlo);
+    double r1 = calculate_integral_using_rectangle(&integral);
+    double r2 = calculate_integral_using_trapezoid(&integral);
+    double r3 = calculate_integral_using_monte_carlo(&integral);
 
     fprintf(summary_file, "%lf (%lf%%) |", r1, r1 / real_result * 100);
     fprintf(summary_file, "%lf (%lf%%) |", r2, r2 / real_result * 100);
     fprintf(summary_file, "%lf (%lf%%) |", r3, r3 / real_result * 100);
-
-
-    free(file_rectangle);
-    free(file_trapezoid);
-    free(file_monte_carlo);
 }
 
 
