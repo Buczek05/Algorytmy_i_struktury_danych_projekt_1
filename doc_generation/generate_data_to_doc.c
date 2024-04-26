@@ -13,8 +13,8 @@ void show_result(struct Integral integral, char *file_prefix, long accuracy, FIL
     double r2 = calculate_integral_using_trapezoid(&integral);
     double r3 = calculate_integral_using_monte_carlo(&integral);
 
-    fprintf(summary_file, "%lf (%lf%%) |", r1, r1 / real_result * 100);
-    fprintf(summary_file, "%lf (%lf%%) |", r2, r2 / real_result * 100);
+    fprintf(summary_file, "%lf (%lf%%)<br>", r1, r1 / real_result * 100);
+    fprintf(summary_file, "%lf (%lf%%)<br>", r2, r2 / real_result * 100);
     fprintf(summary_file, "%lf (%lf%%) |", r3, r3 / real_result * 100);
 }
 
@@ -24,13 +24,13 @@ int main() {
     FILE *summary_file = open_file("doc/auto-documentation.md");
     fprintf(summary_file, "|    | ");
     for (int i = 1; i < 5; i++) {
-        fprintf(summary_file, "f%d rectangle | f%d trapezoid | f%d monte carlo |", i, i, i);
+        fprintf(summary_file, "f%d<br>rectangle<br>trapezoid<br> monte carlo |", i);
     }
     fprintf(summary_file, "\n| --- | ");
     for (int i = 1; i < 5; i++) {
-        fprintf(summary_file, "--- | --- | --- |");
+        fprintf(summary_file, "--- |");
     }
-    for (int i = 10; i < 100000000; i+=50) {
+    for (long i = 10; i < 100000000; i*=10) {
         fprintf(summary_file, "\n| %ld | ", i);
         show_result(get_1(i), "1", i, summary_file, 666666.666666666);
         show_result(get_2(i), "2", i, summary_file, 7.2537208157);
